@@ -4,16 +4,18 @@ import core.GLA;
 
 public class Lyrics {
 
-    private String path;
-    private GLA gla;
+    private final GLA gla;
+    private final String path;
+    private final String id;
 
-    public Lyrics(String path, GLA gla) {
+    public Lyrics(GLA gla, String id, String path) {
         this.path = path;
         this.gla = gla;
+        this.id = id;
     }
 
     public String getText() {
-        return new LyricsParser(this.gla).get(this.path);
+        return new LyricsParser(this.gla).get(this.id);
     }
 
     @Override

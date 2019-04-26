@@ -2,15 +2,22 @@ package genius;
 
 import core.GLA;
 import core.ProjectInfo;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
+
 public class LyricsParser {
 
-    private static final String GENIUS_URL = "http://genius.com";
+    private static final String GENIUS_EMBED_URL_HEAD = "https://genius.com/songs/";
+    private static final String GENIUS_EMBED_URL_TAIL = "/embed.js";
 
     private GLA gla;
 
@@ -21,52 +28,48 @@ public class LyricsParser {
 
     }
 
-    public String get(String path) {
-        if (this.gla.getParseCache().containsKey(path)) {
-            return this.gla.getParseCache().get(path);
+    public String get(String id) {
+        if (this.gla.getParseCache().containsKey(id)) {
+            return this.gla.getParseCache().get(id);
         } else {
-            String lyricsText = parseLyricsText(path);
-            this.gla.getParseCache().put(path, lyricsText);
+            String lyricsText = parseLyrics(id);
+            this.gla.getParseCache().put(id, lyricsText);
             return lyricsText;
         }
     }
 
-    private String parseLyricsText(String path) {
+    private String parseLyrics(String id) {
         try {
-            Document doc = Jsoup.connect(GENIUS_URL + path).referrer("http://discordapp.com").userAgent(ProjectInfo.NAME).get();
-            Element element = doc.getElementsByClass("lyrics").first();
-            return getText(element);
-        } catch (Exception e) {
-            e.printStackTrace();
+            URLConnection connection = new URL(GENIUS_EMBED_URL_HEAD + id + GENIUS_EMBED_URL_TAIL).openConnection();
+            connection.setRequestProperty("User-Agent", ProjectInfo.VERSION);
+            Scanner scanner = new Scanner(connection.getInputStream(), StandardCharsets.UTF_8.toString());
+            scanner.useDelimiter("\\A");
+            String raw = "";
+            while (scanner.hasNext()) {
+                raw += scanner.next();
+            }
+            if (raw.equals("")) {
+                return null;
+            }
+            return getReadable(raw);
+        } catch (IOException e) {
             return null;
         }
     }
 
-    private String getText(Element lyricsElement) {
-        lyricsElement.getElementsByTag("a").unwrap();
-        lyricsElement.getElementsByTag("p").unwrap();
-        Elements elements = lyricsElement.getAllElements();
-        for (Element element1 : elements) {
-            if (!element1.tag().getName().equals("a") && !element1.tag().getName().equals("br") && !element1.tag().getName().equals("p")) element1.remove();
-        }
-        removeComments(lyricsElement);
-        String lyrics = lyricsElement.html();
-        lyrics = lyrics.replaceAll("\n", "");
-        lyrics = lyrics.replaceAll("<br> ", "\n");
-        lyrics = lyrics.replaceAll("<p>", "").replaceAll("</p>", "");
-        return lyrics;
+    private String getReadable(String rawLyrics) {
+        //Remove start
+        rawLyrics = rawLyrics.replaceAll("[\\S\\s]*<div class=\\\\\\\\\\\\\"rg_embed_body\\\\\\\\\\\\\">[ (\\\\\\\\n)]*", "");
+        //Remove end
+        rawLyrics = rawLyrics.replaceAll("[ (\\\\\\\\n)]*<\\\\/div>[\\S\\s]*", "");
+        //Remove tags between
+        rawLyrics = rawLyrics.replaceAll("<[^<>]*>", "");
+        //Unescape spaces
+        rawLyrics = rawLyrics.replaceAll("\\\\\\\\n","\n");
+        //Unescape '
+        rawLyrics = rawLyrics.replaceAll("\\\\'", "'");
+        //Unescape "
+        rawLyrics = rawLyrics.replaceAll("\\\\\\\\\\\\\"", "\"");
+        return rawLyrics;
     }
-
-    private void removeComments(Node node) {
-        for (int i = 0; i < node.childNodes().size();) {
-            Node child = node.childNode(i);
-            if (child.nodeName().equals("#comment"))
-                child.remove();
-            else {
-                removeComments(child);
-                i++;
-            }
-        }
-    }
-
 }

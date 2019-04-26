@@ -54,14 +54,14 @@ public class LyricsCrawler {
             OAuthRequest request = new OAuthRequest(Verb.GET, url);
             this.service.signRequest(this.accessToken, request);
             Response response = this.service.execute(request);
-            return parseResult(response.getBody());
+            return parseResultFromSearchJson(response.getBody());
         } catch (Exception e) {
             e.printStackTrace();
         }
         return new LinkedList<>();
     }
 
-    private List<Lyrics> parseResult(String json) {
+    private List<Lyrics> parseResultFromSearchJson(String json) {
         LinkedList<Lyrics> lyrics = new LinkedList<>();
         JSONObject root = new JSONObject(json);
         JSONArray hits = root.getJSONObject("response").getJSONArray("hits");
@@ -70,7 +70,9 @@ public class LyricsCrawler {
             if (hit.getString("type").equals("song")) {
                 JSONObject result = hit.getJSONObject("result");
                 if (result.getString("lyrics_state").equals("complete")) {
-                    lyrics.add(new Lyrics(result.getString("path"), this.gla));
+                    String path = result.getString("path");
+                    String id = result.getInt("id") + "";
+                    lyrics.add(new Lyrics(this.gla, id, path));
                 }
             }
         }
