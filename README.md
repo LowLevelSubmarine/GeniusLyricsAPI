@@ -9,7 +9,7 @@ Just create a new *GLA* object and start with the *search(String)* method ;)
 **Gradle**
 ```gradle
 dependencies {
-   implementation 'com.github.LowLevelSubmarine:GeniusLyricsAPI-not-official-:master'
+   implementation 'com.github.LowLevelSubmarine:GeniusLyricsAPI:master'
 }
 
 repositories {
@@ -21,7 +21,7 @@ repositories {
 ```xml
 <dependency>
     <groupId>com.github.LowLevelSubmarine</groupId>
-    <artifactId>GeniusLyricsAPI-not-official-</artifactId>
+    <artifactId>GeniusLyricsAPI</artifactId>
     <version>master</version>
 </dependency>
 ```
