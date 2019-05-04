@@ -23,8 +23,12 @@ public class GLA {
 
     }
 
-    public List<Lyrics> search(String parameter) {
-        return this.crawler.get(parameter);
+    public List<Lyrics> search(String query) {
+        return this.crawler.get(query);
+    }
+
+    public List<Lyrics> search(String artist, String title) {
+        return this.crawler.get(artist + " " + title);
     }
 
     public HashMap<String, List<Lyrics>> getCrawlCache() {
@@ -37,7 +41,8 @@ public class GLA {
 
     public static void main(String[] args) {
         GLA gla = new GLA("8RFzUBZ3DF3ZrZAJNHooPeF19q02T0Utds0ZcG5JyL_0BWSzIt2eFI8A8rAMYehA", "4xXT0NinKTI_gO1Y1c6BFsA3SO-lomU6Dtvqw2Dkzo9fq1VsM6qg-Mzv0CTvi9Hf");
-        List<Lyrics> lyricsList = gla.search("dimitri vegas complicated");
+        System.out.println("Searching...");
+        List<Lyrics> lyricsList = gla.search("billie eilish when the party is over");
         System.out.println(lyricsList.get(0).getText());
     }
 

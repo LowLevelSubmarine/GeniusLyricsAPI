@@ -42,23 +42,22 @@ public class LyricsCrawler {
         if (this.gla.getCrawlCache().containsKey(cacheId)) {
             return this.gla.getCrawlCache().get(cacheId);
         } else {
-            List<Lyrics> lyrics =  crawl(parameter);
+            List<Lyrics> lyrics =  search(parameter);
             this.gla.getCrawlCache().put(cacheId, lyrics);
             return lyrics;
         }
     }
 
-    private List<Lyrics> crawl(String parameter) {
-        String url = escapeString(GENIUS_SEARCH_URL + parameter);
+    private List<Lyrics> search(String query) {
+        String url = escapeString(GENIUS_SEARCH_URL + query);
         try {
             OAuthRequest request = new OAuthRequest(Verb.GET, url);
             this.service.signRequest(this.accessToken, request);
             Response response = this.service.execute(request);
             return parseResultFromSearchJson(response.getBody());
         } catch (Exception e) {
-            e.printStackTrace();
+            return new LinkedList<>();
         }
-        return new LinkedList<>();
     }
 
     private List<Lyrics> parseResultFromSearchJson(String json) {
