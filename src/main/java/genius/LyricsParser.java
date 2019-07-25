@@ -2,17 +2,11 @@ package genius;
 
 import core.GLA;
 import core.ProjectInfo;
-import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class LyricsParser {
 
@@ -29,20 +23,14 @@ public class LyricsParser {
     }
 
     public String get(String id) {
-        if (this.gla.getParseCache().containsKey(id)) {
-            return this.gla.getParseCache().get(id);
-        } else {
-            String lyricsText = parseLyrics(id);
-            this.gla.getParseCache().put(id, lyricsText);
-            return lyricsText;
-        }
+        return parseLyrics(id);
     }
 
     private String parseLyrics(String id) {
         try {
             URLConnection connection = new URL(GENIUS_EMBED_URL_HEAD + id + GENIUS_EMBED_URL_TAIL).openConnection();
             connection.setRequestProperty("User-Agent", ProjectInfo.VERSION);
-            Scanner scanner = new Scanner(connection.getInputStream(), StandardCharsets.UTF_8.toString());
+            Scanner scanner = new Scanner(connection.getInputStream());
             scanner.useDelimiter("\\A");
             String raw = "";
             while (scanner.hasNext()) {
