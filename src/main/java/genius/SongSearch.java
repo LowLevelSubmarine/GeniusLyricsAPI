@@ -20,7 +20,7 @@ public class SongSearch {
 
     public SongSearch(GLA gla, String query) throws IOException {
         this.gla = gla;
-        query = URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
+        query = URLEncoder.encode(query, "UTF-8" /* As suggested by User DimitrisStaratzis, for consistent encoding on all devices*/);
         try {
             URI uri = new URI("https://genius.com/api/search/song?page=1&q=" + query);
             request(uri);
