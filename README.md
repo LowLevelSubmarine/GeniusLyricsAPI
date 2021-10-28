@@ -11,7 +11,7 @@ Just create a new *GLA* object and start with the *search(String)* method ;)
 **Gradle**
 ```gradle
 dependencies {
-   implementation 'com.github.LowLevelSubmarine:GeniusLyricsAPI:master'
+   implementation 'com.github.LowLevelSubmarine:GeniusLyricsAPI:1.0.2'
 }
 
 repositories {
@@ -24,7 +24,7 @@ repositories {
 <dependency>
     <groupId>com.github.LowLevelSubmarine</groupId>
     <artifactId>GeniusLyricsAPI</artifactId>
-    <version>master</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 ```xml
