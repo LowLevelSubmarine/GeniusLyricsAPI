@@ -31,7 +31,7 @@ public class SongSearch {
 
     public SongSearch(GLA gla, String query, int page) throws IOException {
         this.gla = gla;
-        query = URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
+        query = URLEncoder.encode(query, "UTF-8"));
         try {
             URI uri = new URI("https://genius.com/api/search/song?page=" + page + "&q=" + query);
             request(uri);
